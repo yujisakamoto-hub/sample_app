@@ -136,9 +136,30 @@ aside {
 
 .gravatar {
   float: left;
-  matgin-right: 10px;
+  margin-right: 10px;
 }
 
 .gravatar_edit {
   margin-top: 15px;
+}
+
+/* mixins, variables, etc. */
+
+@mixin box_sizing {
+  -moz-box-sizing:    border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing:         border-box;
+}
+
+/* forms */
+
+input, textarea {
+  border:1px solid #bbb;
+  width: 100%;
+  margin-bottom: 15px;
+  @include box_sizing;
+}
+
+input {
+  height: auto !important;
 }
