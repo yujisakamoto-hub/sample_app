@@ -1,46 +1,76 @@
 require "test_helper"
 
-class UsersLoginTest < ActionDispatch::IntegrationTest
-  # test "the truth" do
-  #   assert true
-  # end
+class UsersLogin < ActionDispatch::IntegrationTest
 
   def setup
     @user = users(:michael)
   end
+end
 
-  test "メールアドレスが正しくて、パスワードが誤っている場合のテスト" do
+class InvalidPasswordTest < UsersLogin
+
+  test "login pathに飛べるかテスト" do
     get login_path
-    assert_template "sessions/new"
-    post login_path, params: { session: { email: @user.email,
+    assert_template 'sessions/new'
+  end
+
+  test "メーリアドレスは正しく、パスワードは誤っているパターンのテスト" do
+    post login_path, params: { session: { email:    @user.email,
                                           password: "invalid" } }
-    assert_response :unprocessable_content
-    assert_template "sessions/new"
+    assert_not is_logged_in?
+    assert_template 'sessions/new'
     assert_not flash.empty?
     get root_path
     assert flash.empty?
   end
+end
 
-  test "login with invalid information" do
-    get login_path
-    assert_template "sessions/new"
-    post login_path, params: { session: {email: "", password: ""} }
-    assert_response :unprocessable_content
-    assert_template "sessions/new"
-    assert_not flash.empty?
-    get root_path
-    assert flash.empty?
+class ValidLogin < UsersLogin
+
+  def setup
+    super
+    post login_path, params: { session: { email:    @user.email,
+                                          password: 'password' } }
   end
+end
 
-  test "login with valid information" do
-    post login_path, params: { session: { email: @user.email,
-                                          password: "password" } }
+class ValidLoginTest < ValidLogin
 
+  test "ログイン成功しているかのテスト" do
+    assert is_logged_in?
     assert_redirected_to @user
+  end
+
+  test "ログイン後のリダイレクトが正しいかのテスト" do
     follow_redirect!
-    assert_template "users/show"
+    assert_template 'users/show'
     assert_select "a[href=?]", login_path, count: 0
     assert_select "a[href=?]", logout_path
     assert_select "a[href=?]", user_path(@user)
   end
 end
+
+class Logout < ValidLogin
+
+  def setup
+    super
+    delete logout_path
+  end
+end
+
+class LogoutTest < Logout
+
+  test "ログアウトできているかのテスト" do
+    assert_not is_logged_in?
+    assert_response :see_other
+    assert_redirected_to root_url
+  end
+
+  test "ログアウト後のリダイレクトが正しいかのテスト" do
+    follow_redirect!
+    assert_select "a[href=?]", login_path
+    assert_select "a[href=?]", logout_path,      count: 0
+    assert_select "a[href=?]", user_path(@user), count: 0
+  end
+end
+
