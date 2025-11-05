@@ -79,3 +79,15 @@ class LogoutTest < Logout
   end
 end
 
+class RememberingTest < UsersLogin
+  test "ログイン保持のパターン" do
+    log_in_as(@user, remember_me: "1")
+    assert_equal cookies[:remember_token], assigns(:user).remember_token
+  end
+
+  test "ログイン保持しないパターン" do
+    log_in_as(@user, remember_me: "1")
+    log_in_as(@user, remember_me: "0")
+    assert cookies[:remember_token],blank?
+  end
+end
