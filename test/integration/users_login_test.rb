@@ -72,5 +72,10 @@ class LogoutTest < Logout
     assert_select "a[href=?]", logout_path,      count: 0
     assert_select "a[href=?]", user_path(@user), count: 0
   end
+
+  test "2番目のウィンドウでログアウトした場合のテスト" do
+    delete logout_path
+    assert_redirected_to root_path
+  end
 end
 
