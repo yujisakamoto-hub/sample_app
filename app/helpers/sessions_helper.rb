@@ -7,6 +7,7 @@ module SessionsHelper
 
   #現在のユーザーをログアウトする
   def log_out
+    forget(current_user)
     reset_session
     @current_user = nil
   end
@@ -29,6 +30,13 @@ module SessionsHelper
         @current_user = user
       end
     end
+  end
+
+  #永続的セッションを破棄
+  def forget(user)
+    user.forget
+    cookies.delete(:user_id)
+    cookies.delete(:remember_token)
   end
 
   #ユーザーがログインしていればtrue,その他ならflaseを返す
