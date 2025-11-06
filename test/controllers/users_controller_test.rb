@@ -39,4 +39,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_not flash.empty?
     assert_redirected_to root_url
   end
+
+  test "ログインしないとindexにアクセスできない" do
+    get users_path
+    assert_redirected_to login_url
+  end
 end
