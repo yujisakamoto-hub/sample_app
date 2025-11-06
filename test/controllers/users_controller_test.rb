@@ -1,8 +1,26 @@
 require "test_helper"
 
 class UsersControllerTest < ActionDispatch::IntegrationTest
-  test "should get new" do
+
+  def setup
+    @user = users(:michael)
+  end
+
+  test "sign_upページへのアクセステスト" do
     get signup_path
     assert_response :success
+  end
+
+  test "ログインしていない場合はeditにアクセスしようとしてもリダイレクトされる" do
+    get edit_user_path(@user)
+    assert_not flash.empty?
+    assert_redirected_to login_url
+  end
+
+  test "ログインしていない場合はupdateしようとしてもリダイレクトされる" do
+    patch user_path(@user), params: { user: { name: @user.name,
+                                              email: @user.email } }
+    assert_not flash.empty?
+    assert_redirected_to login_url
   end
 end
