@@ -27,6 +27,8 @@ class UsersController < ApplicationController
   def update
     @user = User.find(params[:id])
     if @user.update(user_params)
+      flash[:success] = "プロフィールを編集しました"
+      redirect_to @user
     else
       render "edit", status: :unprocessable_content
     end
