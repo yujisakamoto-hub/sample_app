@@ -44,4 +44,13 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     get users_path
     assert_redirected_to login_url
   end
+
+  test "admin属性をweb経由で編集できない" do
+    log_in_as(@other_user)
+    assert_not @other_user.admin?
+    patch user_path(@other_user), params: { user: { password: "password",
+                                                    password_confirmation: "password",
+                                                    admin: true } }
+    assert_not @other_user.reload.admin?
+  end
 end
