@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
-  before_action :logged_in_user, only: [:index, :edit, :update]
+  before_action :logged_in_user, only: [:index, :edit, :update, :destroy]
   before_action :correct_user,   only: [:edit, :update]
+  before_action :admin_user,     only: :destroy
 
   def index
     @users = User.paginate(page: params[:page])
@@ -38,6 +39,16 @@ class UsersController < ApplicationController
     end
   end
 
+  def destroy
+    user = User.find(params[:id])
+    if user&.destroy
+      flash[:success] = "#{user.name}を削除しました"
+    else
+      flash[:danger] = "ユーザーの削除に失敗しました"
+    end
+    redirect_to users_url, status: :see_other
+  end
+
   private #-----------------------------------------------------------------
 
     def user_params
@@ -48,7 +59,7 @@ class UsersController < ApplicationController
                                   )
     end
 
-    #beforeフィルタ
+    #beforeフィルタ---------------------------------------------
 
     #ログイン済みユーザーかどうか確認
     def logged_in_user
@@ -66,5 +77,9 @@ class UsersController < ApplicationController
         flash[:danger] = "アクセス権がありません"
         redirect_to(root_url, status: :see_other)
       end
+    end
+
+    def admin_user
+      redirect_to(root_url, status: :see_other) unless current_user.admin?
     end
 end
