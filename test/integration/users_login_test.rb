@@ -91,3 +91,28 @@ class RememberingTest < UsersLogin
     assert cookies[:remember_token],blank?
   end
 end
+
+class FriendlyForwardingTest < UsersLogin
+  test "フレンドリーフォワーディングテスト" do
+    #ログインせずに保護ページにアクセス
+    get edit_user_path(@user)
+
+    #セッションにURLが保存されていることを確認
+    assert_equal session[:forwarding_url], edit_user_url(@user)
+
+    #ログイン
+    log_in_as(@user)
+
+    #最初のログイン後は保存されたURLにリダイレクトされる
+    assert_redirected_to edit_user_url(@user)
+
+    #一度ログアウト
+    delete logout_path
+
+    #再度ログイン
+    log_in_as(@user)
+
+    #デフォルトURLにリダイレクトされることを確認
+    assert_redirected_to @user
+  end
+end
