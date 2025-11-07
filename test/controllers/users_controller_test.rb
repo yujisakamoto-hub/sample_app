@@ -53,4 +53,21 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
                                                     admin: true } }
     assert_not @other_user.reload.admin?
   end
+
+  test "ログインしていない場合ユーザー削除できない" do
+    assert_no_difference "User.count" do
+      delete user_path(@user)
+    end
+    assert_response :see_other
+    assert_redirected_to login_url
+  end
+
+  test "管理者ではない場合ユーザー削除できない" do
+    log_in_as(@other_user)
+    assert_no_diffrence "User.count" do
+      delete user_path(@user)
+    end
+    assert_response :see_other
+    assert_redirected_to root_url
+  end
 end
