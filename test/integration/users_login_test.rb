@@ -14,7 +14,7 @@ class InvalidPasswordTest < UsersLogin
     assert_template 'sessions/new'
   end
 
-  test "メーリアドレスは正しく、パスワードは誤っているパターンのテスト" do
+  test "メールアドレスは正しく、パスワードは誤っているパターンのテスト" do
     post login_path, params: { session: { email:    @user.email,
                                           password: "invalid" } }
     assert_not is_logged_in?
