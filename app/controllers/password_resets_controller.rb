@@ -10,7 +10,7 @@ class PasswordResetsController < ApplicationController
       flash[:info] = "パスワードリセット手順が記載されたメールを送信しました"
       redirect_to root_url
     else
-      flash[:danger] = "このメールアドレスは登録されていません"
+      flash.now[:danger] = "このメールアドレスは登録されていません"
       render "new", status: :unprocessable_content
     end
   end
