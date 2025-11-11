@@ -70,4 +70,12 @@ class UserTest < ActiveSupport::TestCase
   test "ダイジェストが存在しない場合のauthenticated?のテスト" do
     assert_not @user.authenticated?(:remember, "")
   end
+
+  test "関連されたmicropostは破棄される" do
+    @user.save
+    @user.microposts.create!(content: "test")
+    assert_difference "Micropost.count", -1 do
+      @user.destroy
+    end
+  end
 end
