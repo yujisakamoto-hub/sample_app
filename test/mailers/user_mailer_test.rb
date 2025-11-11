@@ -1,7 +1,7 @@
 require "test_helper"
 
 class UserMailerTest < ActionMailer::TestCase
-  test "account_activation" do
+  test "アカウント有効化用メーラーメソッドのテスト" do
     user = users(:michael)
     user.activation_token = User.new_token
     mail = UserMailer.account_activation(user)
@@ -10,6 +10,17 @@ class UserMailerTest < ActionMailer::TestCase
     assert_equal ["chaser.yuji.23@gmail.com"], mail.from
     assert_match user.name,              mail.body.encoded
     assert_match user.activation_token,  mail.body.encoded
+    assert_match CGI.escape(user.email), mail.body.encoded
+  end
+
+  test "パスワード再設定用メーラーメソッドのテスト" do
+    user = users(:michael)
+    user.reset_token = User.new_token
+    mail = UserMailer.password_reset(user)
+    assert_equal "パスワード再設定", mail.subject
+    assert_equal [user.email], mail.to
+    assert_equal ["chaser.yuji.23@gmail.com"], mail.from
+    assert_match user.reset_token,  mail.body.encoded
     assert_match CGI.escape(user.email), mail.body.encoded
   end
 
