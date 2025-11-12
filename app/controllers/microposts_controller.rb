@@ -14,16 +14,23 @@ class MicropostsController < ApplicationController
   end
 
   def destroy
+    @micropost.destroy
+    flash[:success] = "投稿を削除しました"
+    if request.referrer.nil?
+      redirect_to root_url, status: :see_other
+    else
+      redirect_to request.referrer, status: :see_other
+    end
   end
-end
 
-private
+  private
 
-def micropost_params
-  params.require(:micropost).permit(:content)
-end
+    def micropost_params
+      params.require(:micropost).permit(:content)
+    end
 
-def correct_user
-  @micropost = current_user.microposts.find_by(id: params[:id])
-  redirect_to root_url, status: :see_other if @micropost.nil?
+    def correct_user
+      @micropost = current_user.microposts.find_by(id: params[:id])
+      redirect_to root_url, status: :see_other if @micropost.nil?
+    end
 end
