@@ -70,3 +70,18 @@ class MicropostsSidebarTest < MicropostsInterface
     assert_match "1 micropost", response.body
   end
 end
+
+class ImageUploadTest < MicropostsInterface
+
+  test "画像アップロード用ファイルインプットフィールドの存在確認" do
+    get root_path
+    assert_select "input[type=file]"
+  end
+
+  test "画像投稿の動作テスト" do
+    content = "画像投稿テスト"
+    image = fixture_file_upload("kitten.jpg", "image/jpeg")
+    post microposts_path, params: { micropost: { content: content, image: image } }
+    assert assigns(:micropost).image.attached?
+  end
+end
