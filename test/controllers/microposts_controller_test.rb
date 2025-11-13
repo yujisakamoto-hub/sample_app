@@ -28,6 +28,6 @@ class MicropostsControllerTest < ActionDispatch::IntegrationTest
       delete micropost_path(micropost)
     end
     assert_response :see_other
-    assert_redirect_to root_url
+    assert_redirected_to root_url
   end
 end
